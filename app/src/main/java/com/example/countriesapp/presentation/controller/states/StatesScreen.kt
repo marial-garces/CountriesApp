@@ -5,6 +5,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,8 +13,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
@@ -50,7 +53,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.countriesapp.R
 import com.example.countriesapp.presentation.components.CountriesBackground
-import com.example.countriesapp.presentation.controller.countries.CountriesCardView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -103,7 +105,7 @@ fun StateItem() {
 @Composable
 fun TopBarState(scrollBehavior: TopAppBarScrollBehavior){
     TopAppBar(
-        scrollBehavior =scrollBehavior,
+        scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFFE9E4E0)),
         title = {
             Row(
@@ -159,9 +161,13 @@ fun StateItemContent() {
                 fontWeight = FontWeight.SemiBold,
             )
             if (expanded){
-                Text(
-                    text = ("o waos aqui va las ciudades de este estado").repeat(2)
-                )
+                StateCityList()
+                StateCityList()
+                StateCityList()
+                StateCityList()
+                StateCityList()
+
+
             }
         }
 
@@ -183,29 +189,43 @@ fun StateItemContent() {
 
 @Composable
 fun StateCityList() {
-    Row {
-        Column(
+    Row(modifier = Modifier.padding(3.dp)) {
+        Row (
             modifier = Modifier
-                .weight(0.75f)
-                .padding(6.dp),
-            verticalArrangement = Arrangement.Center,
+                .weight(1.5f),
+            horizontalArrangement = Arrangement.Start,
 
         ) {
             Text(
                 text = "City Name",
-                fontSize = 14.sp,
+                fontSize = 20.sp,
+                modifier = Modifier.padding(top = 12.dp, start = 5.dp),
             )
         }
-        OutlinedButton(
-            onClick = { /* Handle click */ },
+        IconButton(
+            onClick = {},
+            modifier = Modifier
+                .padding(top = 6.dp)
+                .size(35.dp)
         ) {
-            Text(
-                text = "Population",
-                fontSize = 14.sp,
-            )
+            Icon(
+                painter = painterResource(id = R.drawable.population),
+                contentDescription = "Population Icon",
+                tint = Color(0xFF443E32),
+                )
         }
     }
+    Box(
+        modifier = Modifier
+            .width(500.dp)
+            .height(1.dp)
+            .background(Color.LightGray)
+    )
 }
+
+
+
+
 
 
 @Preview(showBackground = true)
@@ -213,8 +233,6 @@ fun StateCityList() {
 fun StateCityListPreview(){
     StateCityList()
 }
-
-
 
 @Preview
 @Composable
