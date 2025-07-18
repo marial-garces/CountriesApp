@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.countriesapp.data.countries.model.Country
 import com.example.countriesapp.data.countries.repository.CountriesRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +17,10 @@ data class CountriesUiState(
     val error: String? = null
 )
 
-class CountriesViewModel(private val repository: CountriesRepository) : ViewModel() {
+@HiltViewModel
+class CountriesViewModel @Inject constructor(
+    private val repository: CountriesRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow(CountriesUiState())
     val uiState: StateFlow<CountriesUiState> = _uiState.asStateFlow()
 
@@ -31,13 +35,14 @@ class CountriesViewModel(private val repository: CountriesRepository) : ViewMode
             repository.getCountries()
                 .onSuccess { countries ->
                     _uiState.value = _uiState.value.copy(
-                        countries = countries,
+                        countries = countries ?: emptyList(),
                         isLoading = false,
                         error = null
                     )
                 }
                 .onFailure { exception ->
                     _uiState.value = _uiState.value.copy(
+                        countries = emptyList(),
                         isLoading = false,
                         error = exception.message
                     )

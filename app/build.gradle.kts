@@ -1,13 +1,14 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    id ("org.jetbrains.kotlin.android") version "2.1.0"
     alias(libs.plugins.kotlin.compose)
-    id ("kotlin-kapt")
+    id("com.google.devtools.ksp")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
     namespace = "com.example.countriesapp"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.countriesapp"
@@ -41,27 +42,31 @@ android {
 }
 
 dependencies {
-    //lottie animation
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.57")
+    ksp("com.google.dagger:hilt-compiler:2.57")
+
+    // Hilt Navigation Compose
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    // Lottie animation
     implementation("com.airbnb.android:lottie-compose:6.6.7")
 
-    //navigation
+    // Navigation
     implementation("androidx.navigation:navigation-compose:2.9.1")
 
-    //Retrofit
-    implementation("com.squareup.retrofit2:retrofit:3.0.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    // Retrofit - Updated versions
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
-    //OkHttp
+    // OkHttp
     implementation("com.squareup.okhttp3:logging-interceptor:5.1.0")
 
-    //ViewModel
+    // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.1")
 
-    //Coil
+    // Coil
     implementation("io.coil-kt:coil-compose:2.7.0")
-
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-compiler:2.44")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -79,5 +84,4 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
-
 }

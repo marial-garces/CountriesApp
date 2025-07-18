@@ -13,16 +13,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,18 +37,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.countriesapp.R
+import com.example.countriesapp.data.countries.model.Country
 import com.example.countriesapp.presentation.components.CountriesBackground
 import com.example.countriesapp.presentation.components.noRippleClickable
 import com.example.countriesapp.presentation.navigation.Screen
+import com.example.countriesapp.presentation.viewmodel.CountriesViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun CountriesScreen(navController: NavController) {
+fun CountriesScreen(navController: NavController, viewModel: CountriesViewModel = hiltViewModel()) {
+    val uiState = viewModel.uiState.collectAsState()
+
     Scaffold(
         modifier = Modifier,
         topBar = {
@@ -63,14 +74,30 @@ fun CountriesScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(top = paddingValues.calculateTopPadding())
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(1.dp)
-            ) {
-
-                items(count = 10) { index ->
-                    CountriesCardView(navController = navController)
+            when {
+                uiState.value.isLoading -> {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center){
+                        CircularProgressIndicator()
+                    }
+                }
+                uiState.value.error != null -> {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Error: ${uiState.value.error}",
+                            color = Color(0xFFC99F4A),
+                            modifier = Modifier.padding(16.dp)
+                        )
+                        TextButton(onClick = {viewModel.retry()}) {
+                            Text("Retry")
+                        }
+                    }
+                }
+                else -> {
+                    CountriesContent(countries = uiState.value.countries, navController = navController)
                 }
             }
         }
@@ -78,30 +105,25 @@ fun CountriesScreen(navController: NavController) {
     }
 }
 
-//@Composable
-//fun CountriesContent(paddingValues: PaddingValues){
-//    Box(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(top = paddingValues.calculateTopPadding())
-//    ){
-//        Card(
-//            modifier = Modifier.fillMaxSize(),
-//        ){
-//            LazyColumn(
-//                modifier = Modifier.fillMaxSize(),
-//
-//            ) {
-//
-//            }
-//        }
-//
-//    }
-//}
+@Composable
+fun CountriesContent(countries: List<Country>, navController: NavController){
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        items(
+            items = countries.chunked(2),
+            key = { row -> row.first().iso2 + (row.getOrNull(1)?.iso2 ?: "") },
+        ){countryRow ->
+            CountriesCardRow(countries = countryRow, navController = navController)
+        }
+    }
+}
 
 
 @Composable
-fun CountriesCardView(navController: NavController){
+fun CountriesCardRow(navController: NavController, countries: List<Country>){
 
     Row(
         modifier = Modifier
@@ -110,13 +132,18 @@ fun CountriesCardView(navController: NavController){
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        CountriesCard(navController)
-        CountriesCard(navController)
+        countries.forEach { country ->
+            CountriesCard(
+                country = country,
+                navController = navController,
+                modifier = Modifier.weight(1f)
+            )
+        }
     }
 }
 
 @Composable
-fun CountriesCard(navController: NavController){
+fun CountriesCard(navController: NavController, country: Country, modifier: Modifier = Modifier) {
     Card(
         modifier = Modifier
             .size(200.dp)
@@ -130,26 +157,29 @@ fun CountriesCard(navController: NavController){
     ) {
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(15.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(R.drawable.dominican),
-                contentDescription = "Country Flag",
+            AsyncImage(
+                model= country.flag,
+                contentDescription = "Flag of ${country.name}",
                 modifier = Modifier
                     .padding(top = 4.dp)
                     .size(80.dp)
-                    .aspectRatio(1f)
+                    .aspectRatio(1f),
+                error = painterResource(R.drawable.dominican),
             )
             Text(
-                text = "Dominican Republic",
+                text = country.name,
                 fontSize = 24.sp,
                 lineHeight = 20.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF443E32),
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 10.dp)
+                modifier = Modifier.padding(top = 10.dp),
+                maxLines = 2
             )
         }
 
@@ -197,9 +227,12 @@ fun TopBar(scrollBehavior: TopAppBarScrollBehavior){
 @Preview
 @Composable
 fun CountriesCardViewPreview() {
-    val navController = rememberNavController()
+//    val navController = rememberNavController()
 
-    CountriesCardView(navController = navController)
+//    CountriesCardRow(
+//        navController = navController,
+//        countries =
+//    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
