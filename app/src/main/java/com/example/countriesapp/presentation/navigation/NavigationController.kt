@@ -21,8 +21,7 @@ fun SetupNavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
         startDestination = getStartDestination(),
-
-    ){
+    ) {
         composable(route = Screen.Splash.route) {
             SplashScreenController(navController = navController)
         }
@@ -30,9 +29,13 @@ fun SetupNavGraph(navController: NavHostController) {
             CountriesScreen(navController = navController)
         }
         composable(
-            route = Screen.States.route,
-            arguments = listOf(navArgument("country"){type = NavType.StringType})
-            ) {
+            route = Screen.States.ROUTE_WITH_ARGS,
+            arguments = listOf(navArgument("country") {
+                type = NavType.StringType
+                nullable = false
+            })
+        ) { backStackEntry ->
+            val country = backStackEntry.arguments?.getString("country") ?: ""
             StateScreenController(navController = navController)
         }
     }

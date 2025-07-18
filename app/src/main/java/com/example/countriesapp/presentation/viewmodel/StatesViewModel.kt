@@ -15,6 +15,7 @@ import javax.inject.Inject
 
 data class StatesUiState(
     val states: List<States> = emptyList(),
+    val cities: Map<String, List<String>> = emptyMap(),
     val isLoading: Boolean = false,
     val error: String? = null
 )
@@ -49,6 +50,28 @@ class StatesViewModel @Inject constructor(
                 .onFailure { exception ->
                     _uiState.value = _uiState.value.copy(
                         states = emptyList(),
+                        isLoading = false,
+                        error = exception.message
+                    )
+                }
+        }
+    }
+
+    fun loadCities(state: String) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            repository.getCities(country, state)
+                .onSuccess { cities ->
+                    val map = _uiState.value.cities.toMutableMap()
+                    map[state] = cities
+                    _uiState.value = _uiState.value.copy(
+                        cities = map,
+                        isLoading = false,
+                        error = null
+                    )
+                }
+                .onFailure { exception ->
+                    _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         error = exception.message
                     )

@@ -23,3 +23,14 @@ data class States(
 data class CountryRequest(
     val country: String
 )
+
+data class CityRequest(
+    val country: String,
+    val state: String
+)
+
+data class CitiesResponse(
+    val error: Boolean = false,
+    val msg: String? = null,
+    val data: List<String> = emptyList()
+)

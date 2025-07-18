@@ -1,5 +1,6 @@
 package com.example.countriesapp.data.states.repository
 
+import com.example.countriesapp.data.states.model.CityRequest
 import com.example.countriesapp.data.states.model.CountryRequest
 import com.example.countriesapp.data.states.model.States
 import com.example.countriesapp.data.states.remote.StatesApi
@@ -22,6 +23,24 @@ class StatesRepository @Inject constructor(
                 Result.failure(Exception("Error fetching states: ${'$'}{response.message()}"))
             }
         }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getCities(country: String, state: String): Result<List<String>> {
+        return try {
+            val response = api.getCities(CityRequest(country, state))
+            if (response.isSuccessful && response.body() != null) {
+                val body = response.body()!!
+                if (!body.error) {
+                    Result.success(body.data)
+                } else {
+                    Result.failure(Exception("API Error: ${'$'}{body.msg}"))
+                }
+            } else {
+                Result.failure(Exception("Error fetching cities: ${'$'}{response.message()}"))
+            }
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }

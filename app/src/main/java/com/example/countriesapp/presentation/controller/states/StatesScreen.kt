@@ -111,7 +111,13 @@ fun StateScreenController(navController: NavController, viewModel: StatesViewMod
                         verticalArrangement = Arrangement.spacedBy(1.dp)
                     ) {
                         items(uiState.value.states.size){ index ->
-                            StateItem(states = uiState.value.states[index])
+                            val state = uiState.value.states[index]
+                            val cities = uiState.value.cities[state.name]
+                            StateItem(
+                                states = state,
+                                cities = cities ?: emptyList(),
+                                onExpand = { viewModel.loadCities(state.name) }
+                            )
                         }
                     }
                 }
@@ -133,13 +139,13 @@ fun StateScreenController(navController: NavController, viewModel: StatesViewMod
 
 
 @Composable
-fun StateItem(states: States) {
+fun StateItem(states: States, cities: List<String>, onExpand: () -> Unit) {
     Card(
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F2EF)),
         elevation = CardDefaults.cardElevation(10.dp),
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
-        StateItemContent(states)
+        StateItemContent(states, cities, onExpand)
     }
 }
 
@@ -182,7 +188,7 @@ fun TopBarState(scrollBehavior: TopAppBarScrollBehavior){
 
 
 @Composable
-fun StateItemContent(states: States) {
+fun StateItemContent(states: States, cities: List<String>, onExpand: () -> Unit) {
 
     var expanded by rememberSaveable { mutableStateOf(false) }
 
@@ -204,11 +210,16 @@ fun StateItemContent(states: States) {
                 fontWeight = FontWeight.SemiBold,
             )
             if (expanded){
-                StateCityList()
+                StateCityList(cities)
             }
         }
 
-        IconButton(onClick =  { expanded = !expanded }) {
+        IconButton(onClick =  {
+            expanded = !expanded
+            if (expanded && cities.isEmpty()) {
+                onExpand()
+            }
+        }) {
             Icon(
                 imageVector = if(expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                 contentDescription = if (expanded){
@@ -225,39 +236,39 @@ fun StateItemContent(states: States) {
 
 
 @Composable
-fun StateCityList() {
-    Row(modifier = Modifier.padding(3.dp)) {
-        Row (
-            modifier = Modifier
-                .weight(1.5f),
-            horizontalArrangement = Arrangement.Start,
-
-        ) {
-            Text(
-                text = "City Name",
-                fontSize = 20.sp,
-                modifier = Modifier.padding(top = 12.dp, start = 5.dp),
-            )
-        }
-        IconButton(
-            onClick = {},
-            modifier = Modifier
-                .padding(top = 6.dp)
-                .size(35.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.population),
-                contentDescription = "Population Icon",
-                tint = Color(0xFF443E32),
+fun StateCityList(cities: List<String>) {
+    cities.forEach { city ->
+        Row(modifier = Modifier.padding(3.dp)) {
+            Row(
+                modifier = Modifier.weight(1.5f),
+                horizontalArrangement = Arrangement.Start,
+            ) {
+                Text(
+                    text = city,
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(top = 12.dp, start = 5.dp),
                 )
+            }
+            IconButton(
+                onClick = {},
+                modifier = Modifier
+                    .padding(top = 6.dp)
+                    .size(35.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.population),
+                    contentDescription = "Population Icon",
+                    tint = Color(0xFF443E32),
+                )
+            }
         }
+        Box(
+            modifier = Modifier
+                .width(500.dp)
+                .height(1.dp)
+                .background(Color.LightGray)
+        )
     }
-    Box(
-        modifier = Modifier
-            .width(500.dp)
-            .height(1.dp)
-            .background(Color.LightGray)
-    )
 }
 
 
@@ -268,19 +279,19 @@ fun StateCityList() {
 @Preview(showBackground = true)
 @Composable
 fun StateCityListPreview(){
-    StateCityList()
+    StateCityList(listOf("Preview City"))
 }
 
 @Preview
 @Composable
 fun StateItemContentPreview() {
-    StateItemContent(states = States("Preview"))
+    StateItemContent(states = States("Preview"), cities = listOf("City")) {}
 }
 
 @Preview
 @Composable
 fun StateItemPreview() {
-    StateItem(states = States("Preview"))
+    StateItem(states= States("Preview"), cities = listOf("City")) {}
 }
 
 @Preview
