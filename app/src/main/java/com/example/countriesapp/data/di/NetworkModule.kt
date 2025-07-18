@@ -2,6 +2,8 @@ package com.example.countriesapp.data.di
 
 import com.example.countriesapp.data.countries.remote.CountriesApi
 import com.example.countriesapp.data.countries.repository.CountriesRepository
+import com.example.countriesapp.data.states.remote.StatesApi
+import com.example.countriesapp.data.states.repository.StatesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,7 +34,19 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideCountriesRepository(api: CountriesApi): CountriesRepository {
-        return CountriesRepository(api)
+    fun provideCountriesRepository(apiCountries: CountriesApi): CountriesRepository {
+        return CountriesRepository(apiCountries)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStatesApi(retrofit: Retrofit): StatesApi {
+        return retrofit.create(StatesApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStatesRepository(apiStates: StatesApi): StatesRepository {
+        return StatesRepository(apiStates)
     }
 }

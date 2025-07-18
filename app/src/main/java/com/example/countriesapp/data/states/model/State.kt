@@ -1,4 +1,25 @@
 package com.example.countriesapp.data.states.model
 
+import com.google.gson.annotations.SerializedName
 
-data class StateResponse(/*TODO*\)
+
+data class StateResponse(
+    @SerializedName("data")
+    val data : StateData? = null,
+    val error: Boolean = false,
+    val msg: String? = null
+)
+
+data class StateData(
+    val name: String,
+    val iso3: String,
+    val states: List<States> = emptyList()
+)
+
+data class States(
+    val name: String
+)
+
+data class CountryRequest(
+    val country: String
+)

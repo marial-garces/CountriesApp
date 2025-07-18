@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,6 +36,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -50,14 +52,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.countriesapp.R
+import com.example.countriesapp.data.states.model.States
 import com.example.countriesapp.presentation.components.CountriesBackground
+import com.example.countriesapp.presentation.viewmodel.StatesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun StateScreenController(navController: NavController){
+fun StateScreenController(navController: NavController, viewModel: StatesViewModel = hiltViewModel()){
     Scaffold(
         modifier = Modifier,
         topBar = {
@@ -69,34 +74,71 @@ fun StateScreenController(navController: NavController){
     ) {paddingValues ->
         CountriesBackground(painter = R.drawable.background_app)
 
+        val uiState = viewModel.uiState.collectAsState()
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = paddingValues.calculateTopPadding())
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(1.dp)
-            ) {
-
-                items(count = 10) { index ->
-                    StateItem()
+            when {
+                uiState.value.isLoading -> {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center){
+                        CircularProgressIndicator()
+                    }
+                }
+                uiState.value.error != null -> {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Error: ${uiState.value.error}",
+                            color = Color(0xFFC99F4A),
+                            modifier = Modifier.padding(16.dp)
+                        )
+                        OutlinedButton(onClick = { viewModel.retry() }) {
+                            Text("Retry")
+                        }
+                    }
+                }
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(1.dp)
+                    ) {
+                        items(uiState.value.states.size){ index ->
+                            StateItem(states = uiState.value.states[index])
+                        }
+                    }
                 }
             }
+
+//            LazyColumn(
+//                modifier = Modifier.fillMaxSize(),
+//                contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp),
+//                verticalArrangement = Arrangement.spacedBy(1.dp)
+//            ) {
+//
+//                items(count = 10) { index ->
+//                    StateItem()
+//                }
+//            }
         }
     }
 }
 
 
 @Composable
-fun StateItem() {
+fun StateItem(states: States) {
     Card(
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F2EF)),
         elevation = CardDefaults.cardElevation(10.dp),
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
-        StateItemContent()
+        StateItemContent(states)
     }
 }
 
@@ -139,7 +181,7 @@ fun TopBarState(scrollBehavior: TopAppBarScrollBehavior){
 
 
 @Composable
-fun StateItemContent() {
+fun StateItemContent(states: States) {
 
     var expanded by rememberSaveable { mutableStateOf(false) }
 
@@ -155,19 +197,13 @@ fun StateItemContent() {
     ) {
         Column(modifier = Modifier.weight(1f).padding(12.dp)) {
             Text(
-                text = "State Name",
+                text = states.name,
                 fontSize = 23.sp,
                 lineHeight = 20.sp,
                 fontWeight = FontWeight.SemiBold,
             )
             if (expanded){
                 StateCityList()
-                StateCityList()
-                StateCityList()
-                StateCityList()
-                StateCityList()
-
-
             }
         }
 
@@ -237,13 +273,13 @@ fun StateCityListPreview(){
 @Preview
 @Composable
 fun StateItemContentPreview() {
-    StateItemContent()
+    StateItemContent(states = States("Preview"))
 }
 
 @Preview
 @Composable
 fun StateItemPreview() {
-    StateItem()
+    StateItem(states = States("Preview"))
 }
 
 @Preview

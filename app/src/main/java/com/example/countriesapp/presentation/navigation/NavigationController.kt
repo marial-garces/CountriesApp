@@ -5,9 +5,11 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.countriesapp.presentation.controller.countries.CountriesScreen
 import com.example.countriesapp.presentation.controller.splash.SplashScreenController
 import com.example.countriesapp.presentation.controller.states.StateScreenController
@@ -27,7 +29,10 @@ fun SetupNavGraph(navController: NavHostController) {
         composable(route = Screen.Countries.route) {
             CountriesScreen(navController = navController)
         }
-        composable(route = Screen.States.route) {
+        composable(
+            route = Screen.States.route,
+            arguments = listOf(navArgument("country"){type = NavType.StringType})
+            ) {
             StateScreenController(navController = navController)
         }
     }

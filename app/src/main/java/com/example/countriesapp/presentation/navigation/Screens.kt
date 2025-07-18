@@ -6,7 +6,9 @@ sealed class Screen(val route: String) {
 
     data object Countries : Screen("countries_screen")
 
-    data object States : Screen("states_screen")
+    data object States : Screen("states_screen"){
+        fun createRoute(country:String) = "${route}/$country"
+    }
 
     companion object {
         fun getStartDestination() = Splash.route

@@ -48,6 +48,8 @@ import com.example.countriesapp.presentation.components.CountriesBackground
 import com.example.countriesapp.presentation.components.noRippleClickable
 import com.example.countriesapp.presentation.navigation.Screen
 import com.example.countriesapp.presentation.viewmodel.CountriesViewModel
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -153,8 +155,9 @@ fun CountriesCard(navController: NavController, country: Country, modifier: Modi
             .size(200.dp)
             .padding(5.dp)
             .noRippleClickable {
+                val encoded = URLEncoder.encode(country.name, StandardCharsets.UTF_8.toString())
                 navController.popBackStack()
-                navController.navigate(Screen.States.route)
+                navController.navigate(Screen.States.createRoute(encoded))
             },
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F2EF)),
         elevation = CardDefaults.cardElevation(10.dp)
