@@ -1,9 +1,9 @@
 package com.example.countriesapp.data.countries.model
 
 data class CountriesResponse(
-    val countries: List<Country>,
-    val error: Boolean,
-    val msg: String
+    val countries: List<Country>? = null,
+    val error: Boolean = false,
+    val msg: String? = null
 )
 
 data class Country(

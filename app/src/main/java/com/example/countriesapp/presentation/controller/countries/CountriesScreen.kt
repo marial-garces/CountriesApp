@@ -96,8 +96,12 @@ fun CountriesScreen(navController: NavController, viewModel: CountriesViewModel 
                         }
                     }
                 }
-                else -> {
+                true -> {
                     CountriesContent(countries = uiState.value.countries, navController = navController)
+
+                }
+                else -> {
+                    Text("No countries available")
                 }
             }
         }
