@@ -156,8 +156,8 @@ fun CountriesCard(navController: NavController, country: Country, modifier: Modi
             .padding(5.dp)
             .noRippleClickable {
                 val encoded = URLEncoder.encode(country.name, StandardCharsets.UTF_8.toString())
-                navController.popBackStack()
                 navController.navigate(Screen.States.createRoute(encoded))
+                navController.popBackStack()
             },
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F2EF)),
         elevation = CardDefaults.cardElevation(10.dp)

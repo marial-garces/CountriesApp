@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.countriesapp.R
 import com.example.countriesapp.data.states.model.States
 import com.example.countriesapp.presentation.components.CountriesBackground
@@ -285,6 +286,6 @@ fun StateItemPreview() {
 @Preview
 @Composable
 fun StateScreenControllerPreview() {
-    val navController = NavController(context = LocalContext.current)
+    val navController = rememberNavController()
     StateScreenController(navController)
 }
