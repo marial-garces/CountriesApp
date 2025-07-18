@@ -1,4 +1,4 @@
-package com.example.countriesapp.di
+package com.example.countriesapp.data.di
 
 import com.example.countriesapp.data.countries.remote.CountriesApi
 import com.example.countriesapp.data.countries.repository.CountriesRepository
