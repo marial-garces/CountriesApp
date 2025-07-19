@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.countriesapp.presentation.controller.countries.CountriesScreen
+import com.example.countriesapp.presentation.controller.population.PopulationScreen
 import com.example.countriesapp.presentation.controller.splash.SplashScreenController
 import com.example.countriesapp.presentation.controller.states.StateScreenController
 import com.example.countriesapp.presentation.navigation.Screen.Companion.getStartDestination
@@ -37,6 +38,12 @@ fun SetupNavGraph(navController: NavHostController) {
         ) { backStackEntry ->
             val country = backStackEntry.arguments?.getString("country") ?: ""
             StateScreenController(navController = navController)
+        }
+        composable(
+            route = Screen.Population.route + "/{city}",
+            arguments = listOf(navArgument("city") { type = NavType.StringType })
+        ) {
+            PopulationScreen(navController = navController)
         }
     }
 }

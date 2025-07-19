@@ -11,6 +11,10 @@ sealed class Screen(val route: String) {
         const val ROUTE_WITH_ARGS = "states_screen/{country}"
     }
 
+    data object Population : Screen("population_screen") {
+        fun createRoute(city: String) = "${route}/$city"
+    }
+
     companion object {
         fun getStartDestination() = Splash.route
     }

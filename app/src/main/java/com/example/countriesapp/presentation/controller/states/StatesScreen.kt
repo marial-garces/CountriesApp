@@ -58,6 +58,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.countriesapp.R
 import com.example.countriesapp.data.states.model.States
 import com.example.countriesapp.presentation.components.CountriesBackground
+import com.example.countriesapp.presentation.navigation.Screen
 import com.example.countriesapp.presentation.viewmodel.StatesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -114,6 +115,7 @@ fun StateScreenController(navController: NavController, viewModel: StatesViewMod
                             val state = uiState.value.states[index]
                             val cities = uiState.value.cities[state.name]
                             StateItem(
+                                navController = navController,
                                 states = state,
                                 cities = cities ?: emptyList(),
                                 onExpand = { viewModel.loadCities(state.name) }
@@ -139,13 +141,14 @@ fun StateScreenController(navController: NavController, viewModel: StatesViewMod
 
 
 @Composable
-fun StateItem(states: States, cities: List<String>, onExpand: () -> Unit) {
+fun StateItem(navController: NavController, states: States, cities: List<String>, onExpand: () -> Unit) {
     Card(
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F2EF)),
         elevation = CardDefaults.cardElevation(10.dp),
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
-        StateItemContent(states, cities, onExpand)
+        val navController = rememberNavController()
+        StateItemContent(navController, states, cities, onExpand)
     }
 }
 
@@ -188,7 +191,7 @@ fun TopBarState(scrollBehavior: TopAppBarScrollBehavior){
 
 
 @Composable
-fun StateItemContent(states: States, cities: List<String>, onExpand: () -> Unit) {
+fun StateItemContent(navController: NavController, states: States, cities: List<String>, onExpand: () -> Unit) {
 
     var expanded by rememberSaveable { mutableStateOf(false) }
 
@@ -210,7 +213,8 @@ fun StateItemContent(states: States, cities: List<String>, onExpand: () -> Unit)
                 fontWeight = FontWeight.SemiBold,
             )
             if (expanded){
-                StateCityList(cities)
+                val navController = rememberNavController()
+                StateCityList(navController, cities = cities)
             }
         }
 
@@ -236,7 +240,7 @@ fun StateItemContent(states: States, cities: List<String>, onExpand: () -> Unit)
 
 
 @Composable
-fun StateCityList(cities: List<String>) {
+fun StateCityList(navController: NavController, cities: List<String>) {
     cities.forEach { city ->
         Row(modifier = Modifier.padding(3.dp)) {
             Row(
@@ -250,7 +254,10 @@ fun StateCityList(cities: List<String>) {
                 )
             }
             IconButton(
-                onClick = {},
+                onClick = {
+                    val encoded = java.net.URLEncoder.encode(city, java.nio.charset.StandardCharsets.UTF_8.toString())
+                    navController.navigate(Screen.Population.createRoute(encoded))
+                },
                 modifier = Modifier
                     .padding(top = 6.dp)
                     .size(35.dp)
@@ -279,19 +286,22 @@ fun StateCityList(cities: List<String>) {
 @Preview(showBackground = true)
 @Composable
 fun StateCityListPreview(){
-    StateCityList(listOf("Preview City"))
+    val navController = rememberNavController()
+    StateCityList(navController, listOf("Preview City"))
 }
 
 @Preview
 @Composable
 fun StateItemContentPreview() {
-    StateItemContent(states = States("Preview"), cities = listOf("City")) {}
+    val navController = rememberNavController()
+    StateItemContent(navController, states = States("Preview"), cities = listOf("City")) {}
 }
 
 @Preview
 @Composable
 fun StateItemPreview() {
-    StateItem(states= States("Preview"), cities = listOf("City")) {}
+    val navController = rememberNavController()
+    StateItem(navController, states = States("Preview"), cities = listOf("City")) {}
 }
 
 @Preview

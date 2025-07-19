@@ -2,6 +2,8 @@ package com.example.countriesapp.data.states.repository
 
 import com.example.countriesapp.data.states.model.CityRequest
 import com.example.countriesapp.data.states.model.CountryRequest
+import com.example.countriesapp.data.states.model.PopulationCount
+import com.example.countriesapp.data.states.model.PopulationRequest
 import com.example.countriesapp.data.states.model.States
 import com.example.countriesapp.data.states.remote.StatesApi
 import javax.inject.Inject
@@ -39,6 +41,25 @@ class StatesRepository @Inject constructor(
                 }
             } else {
                 Result.failure(Exception("Error fetching cities: ${'$'}{response.message()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getPopulation(city: String): Result<List<PopulationCount>> {
+        return try {
+            val response = api.getPopulation(PopulationRequest(city))
+            if (response.isSuccessful && response.body() != null) {
+                val body = response.body()!!
+                if (!body.error) {
+                    val counts = body.data.firstOrNull()?.populationCounts ?: emptyList()
+                    Result.success(counts)
+                } else {
+                    Result.failure(Exception("API Error: ${'$'}{body.msg}"))
+                }
+            } else {
+                Result.failure(Exception("Error fetching population: ${'$'}{response.message()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)
