@@ -12,7 +12,8 @@ sealed class Screen(val route: String) {
     }
 
     data object Population : Screen("population_screen") {
-        fun createRoute(city: String) = "${route}/$city"
+        fun createRoute(city: String) = "population_screen/$city"
+        const val ROUTE_WITH_ARGS = "population_screen/{city}"
     }
 
     companion object {

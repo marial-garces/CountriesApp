@@ -147,7 +147,6 @@ fun StateItem(navController: NavController, states: States, cities: List<String>
         elevation = CardDefaults.cardElevation(10.dp),
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
-        val navController = rememberNavController()
         StateItemContent(navController, states, cities, onExpand)
     }
 }
@@ -213,7 +212,6 @@ fun StateItemContent(navController: NavController, states: States, cities: List<
                 fontWeight = FontWeight.SemiBold,
             )
             if (expanded){
-                val navController = rememberNavController()
                 StateCityList(navController, cities = cities)
             }
         }

@@ -24,7 +24,7 @@ class PopulationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val city: String = savedStateHandle["city"]
+    private val city: String = savedStateHandle.get<String>("city")
         ?.let { java.net.URLDecoder.decode(it, java.nio.charset.StandardCharsets.UTF_8.toString()) }
         ?: ""
 

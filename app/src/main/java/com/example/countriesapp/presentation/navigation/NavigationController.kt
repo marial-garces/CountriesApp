@@ -30,20 +30,18 @@ fun SetupNavGraph(navController: NavHostController) {
             CountriesScreen(navController = navController)
         }
         composable(
+            route = Screen.Population.ROUTE_WITH_ARGS,
+            arguments = listOf(navArgument("city") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val city = backStackEntry.arguments?.getString("city") ?: ""
+            PopulationScreen(navController = navController)
+        }
+        composable(
             route = Screen.States.ROUTE_WITH_ARGS,
-            arguments = listOf(navArgument("country") {
-                type = NavType.StringType
-                nullable = false
-            })
+            arguments = listOf(navArgument("country") { type = NavType.StringType })
         ) { backStackEntry ->
             val country = backStackEntry.arguments?.getString("country") ?: ""
             StateScreenController(navController = navController)
-        }
-        composable(
-            route = Screen.Population.route + "/{city}",
-            arguments = listOf(navArgument("city") { type = NavType.StringType })
-        ) {
-            PopulationScreen(navController = navController)
         }
     }
 }
