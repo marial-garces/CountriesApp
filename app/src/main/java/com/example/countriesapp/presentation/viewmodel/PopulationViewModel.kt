@@ -3,7 +3,7 @@ package com.example.countriesapp.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.countriesapp.data.states.model.PopulationCount
+import com.example.countriesapp.data.states.model.PopulationCounts
 import com.example.countriesapp.data.states.repository.StatesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class PopulationUiState(
-    val counts: List<PopulationCount> = emptyList(),
+    val counts: List<PopulationCounts> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 )

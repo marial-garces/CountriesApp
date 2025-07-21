@@ -7,17 +7,21 @@ data class PopulationRequest(
 )
 
 data class PopulationResponse(
-    val error: Boolean = false,
-    val msg: String? = null,
-    val data: CityPopulation? = null
+    @SerializedName("error") var error : Boolean? = null,
+    @SerializedName("msg") var msg   : String?  = null,
+    @SerializedName("data") var data  : PopulationData?    = PopulationData()
 )
 
-data class CityPopulation(
-    val city: String,
-    @SerializedName("populationCounts") val populationCounts: List<PopulationCount> = emptyList()
+
+data class PopulationData (
+    @SerializedName("city") var city             : String?                     = null,
+    @SerializedName("country") var country          : String?                     = null,
+    @SerializedName("populationCounts") var populationCounts : ArrayList<PopulationCounts> = arrayListOf()
 )
 
-data class PopulationCount(
-    val year: String,
-    val value: String
+data class PopulationCounts (
+    @SerializedName("year") var year       : String? = null,
+    @SerializedName("value") var value      : String? = null,
+    @SerializedName("sex") var sex        : String? = null,
+    @SerializedName("reliabilty") var reliabilty : String? = null
 )

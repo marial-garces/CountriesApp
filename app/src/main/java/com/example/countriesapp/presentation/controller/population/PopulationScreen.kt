@@ -40,7 +40,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.countriesapp.R
 import com.example.countriesapp.R.*
-import com.example.countriesapp.data.states.model.PopulationCount
+import com.example.countriesapp.data.states.model.PopulationCounts
 import com.example.countriesapp.presentation.components.CountriesBackground
 import com.example.countriesapp.presentation.components.noRippleClickable
 import com.example.countriesapp.presentation.viewmodel.PopulationViewModel
@@ -98,7 +98,7 @@ fun PopulationScreen(navController: NavController, viewModel: PopulationViewMode
 }
 
 @Composable
-fun PopulationContent(counts: List<PopulationCount>) {
+fun PopulationContent(counts: List<PopulationCounts>) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp),
@@ -111,7 +111,7 @@ fun PopulationContent(counts: List<PopulationCount>) {
 }
 
 @Composable
-fun PopulationRow(count: PopulationCount) {
+fun PopulationRow(count: PopulationCounts) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -125,8 +125,8 @@ fun PopulationRow(count: PopulationCount) {
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = count.year, fontSize = 20.sp)
-            Text(text = count.value, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+            count.year?.let { Text(text = it, fontSize = 20.sp) }
+            count.value?.let { Text(text = it, fontSize = 20.sp, fontWeight = FontWeight.SemiBold) }
         }
     }
 }
