@@ -53,7 +53,7 @@ class StatesRepository @Inject constructor(
             if (response.isSuccessful && response.body() != null) {
                 val body = response.body()!!
                 if (!body.error) {
-                    val counts = body.data.firstOrNull()?.populationCounts ?: emptyList()
+                    val counts = body.data?.populationCounts ?: emptyList()
                     Result.success(counts)
                 } else {
                     Result.failure(Exception("API Error: ${'$'}{body.msg}"))

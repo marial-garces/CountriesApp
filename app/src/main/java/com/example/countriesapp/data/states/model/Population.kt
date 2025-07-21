@@ -9,7 +9,7 @@ data class PopulationRequest(
 data class PopulationResponse(
     val error: Boolean = false,
     val msg: String? = null,
-    val data: List<CityPopulation> = emptyList()
+    val data: CityPopulation? = null
 )
 
 data class CityPopulation(
